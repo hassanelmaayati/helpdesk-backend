@@ -55,8 +55,34 @@ const updateComment = async (req, res) => {
   }
 };
 
+const deleteComment = async (req, res) => {
+  try {
+    const comment = await Comment.findOne({
+      _id: req.params.commentId,
+      author: req.user._id,
+    });
+
+    if (!comment) {
+      return res.status(403).json({
+        err: 'You can only delete your own comments.',
+      });
+    }
+
+    await comment.deleteOne();
+
+    res.status(200).json({
+      message: 'Comment deleted successfully.',
+    });
+  } catch (err) {
+    res.status(400).json({ err: err.message });
+  }
+};
+
+
 module.exports = {
   createComment,
   indexComments,
-  updateComments,
+  updateComment,
+  deleteComment,
+
 };

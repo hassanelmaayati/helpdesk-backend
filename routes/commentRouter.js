@@ -6,6 +6,8 @@ const {
   createComment,
   indexComments,
    updateComment,
+   deleteComment,
+
 } = require('../controllers/commentController');
 
 const verifyToken = require('../middleware/verifyToken');
@@ -29,6 +31,13 @@ router.put(
   '/tickets/:ticketId/comments/:commentId',
   verifyToken,
   updateComment
+);
+
+
+router.delete(
+  '/tickets/:ticketId/comments/:commentId',
+  verifyToken,
+  deleteComment
 );
 
 module.exports = router;
