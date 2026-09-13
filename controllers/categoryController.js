@@ -29,9 +29,9 @@ const update = async (req,res)=>{
         if (req.user.role !== 'it-staff') {
          return res.status(403).json({ error: 'Access denied' });}
          const updatedCategory = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        //  if(!updatedCategory){
-        // return res.status(404).json({ error: 'Category not found' });
-        //  }
+         if(!updatedCategory){
+        return res.status(404).json({ error: 'Category not found' });
+         }
          res.status(200).json(updatedCategory);
 
     }
