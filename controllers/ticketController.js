@@ -26,10 +26,9 @@ const getTickets = async (req, res) => {
     if (req.user.role === "employee") {
       tickets = await Ticket.find({ createdBy: req.user._id })
         .populate("category")
-        .populate("createdBy");
+        .populate("createdBy", "name email role")
     } else {
-      tickets = await Ticket.find().populate("category").populate("createdBy");
-    }
+tickets = await Ticket.find().populate("category").populate("createdBy", "name email role");    }
 
     res.status(200).json(tickets);
   } catch (err) {
@@ -41,7 +40,7 @@ const getTicket = async (req, res) => {
   try {
     const ticket = await Ticket.findById(req.params.id)
       .populate("category")
-      .populate("createdBy");
+      .populate("createdBy", "name email role")
 
     if (!ticket) {
       return res.status(404).json({ error: "Ticket not found" });
