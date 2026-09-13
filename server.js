@@ -4,13 +4,14 @@ const mongoose = require("mongoose");
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const commentRouter = require('./routes/commentRouter');
+const ticketRoutes = require('./routes/ticketRoutes');
 
 const app = express();
 
 app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/categories', categoryRoutes);
-
+app.use('/tickets', ticketRoutes);
 
 
 app.use('/', commentRouter);
