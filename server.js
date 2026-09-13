@@ -2,12 +2,17 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const authRoutes = require('./routes/authRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 const commentRouter = require('./routes/commentRouter');
 
 const app = express();
 
 app.use(express.json());
 app.use('/auth', authRoutes);
+app.use('/categories', categoryRoutes);
+
+
+
 app.use('/', commentRouter);
 
 
