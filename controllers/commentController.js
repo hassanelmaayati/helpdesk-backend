@@ -16,6 +16,22 @@ const createComment = async (req, res) => {
   }
 };
 
+const indexComments = async (req, res) => {
+  try {
+    const comments = await Comment.find({
+      ticket: req.params.ticketId,
+    })
+      .populate('author', 'name email')
+      .sort({ createdAt: 1 });
+
+    res.status(200).json(comments);
+  } catch (err) {
+    res.status(400).json({ err: err.message });
+  }
+};
+
+
 module.exports = {
   createComment,
+  indexComments,
 };
