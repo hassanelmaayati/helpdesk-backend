@@ -30,8 +30,33 @@ const indexComments = async (req, res) => {
   }
 };
 
+const updateComment = async (req, res) => {
+  try {
+    const comment = await Comment.findOne({
+      _id: req.params.commentId,
+      author: req.user._id,
+    });
+
+    if (!comment) {
+      return res.status(403).json({
+        err: 'You can only edit your own comments.',
+      });
+    }
+
+    comment.content = req.body.content;
+
+    await comment.save();
+
+    const populatedComment = await comment.populate('author', 'name email');
+
+    res.status(200).json(populatedComment);
+  } catch (err) {
+    res.status(400).json({ err: err.message });
+  }
+};
 
 module.exports = {
   createComment,
   indexComments,
+  updateComments,
 };

@@ -5,6 +5,7 @@ const router = express.Router();
 const {
   createComment,
   indexComments,
+   updateComment,
 } = require('../controllers/commentController');
 
 const verifyToken = require('../middleware/verifyToken');
@@ -12,14 +13,22 @@ const verifyToken = require('../middleware/verifyToken');
 router.post(
   '/tickets/:ticketId/comments',
   verifyToken,
-  createComment
+  createComment,
+  
 );
 
 
 router.get(
   '/tickets/:ticketId/comments',
   verifyToken,
-  indexComments
+  indexComments,
+);
+
+
+router.put(
+  '/tickets/:ticketId/comments/:commentId',
+  verifyToken,
+  updateComment
 );
 
 module.exports = router;
