@@ -36,6 +36,20 @@ tickets = await Ticket.find().populate("category").populate("createdBy", "name e
   }
 };
 
+const getMyTickets = async (req, res) => {
+  try {
+    const tickets = await Ticket.find({
+      createdBy: req.user._id,
+    })
+      .populate("category")
+      .populate("createdBy", "name email role");
+
+    res.status(200).json(tickets);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const getTicket = async (req, res) => {
   try {
     const ticket = await Ticket.findById(req.params.id)
@@ -121,6 +135,7 @@ const deleteTicket = async (req, res) => {
 module.exports = {
   createTicket,
   getTickets,
+  getMyTickets,
   getTicket,
   updateTicket,
   updateStatus,
