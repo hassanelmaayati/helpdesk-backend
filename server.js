@@ -10,6 +10,7 @@ const ticketRoutes = require("./routes/ticketRoutes");
 
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 if (isProduction) {
@@ -19,15 +20,14 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/tickets", ticketRoutes);
-
 app.use("/", commentRouter);
 
 mongoose.connect(process.env.MONGODB_URI);
 
 mongoose.connection.on("connected", () => {
-  console.log("Connected to MongoDB :D");
+  console.log("Connected to MongoDB");
 });
 
-app.listen(3001, "0.0.0.0", () => {
-  console.log(`The express app is ready on port!`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`The express app is ready on port ${port}!`);
 });
