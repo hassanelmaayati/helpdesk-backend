@@ -78,11 +78,9 @@ const deleteComment = async (req, res) => {
   }
 };
 
-
 module.exports = {
   createComment,
   indexComments,
   updateComment,
   deleteComment,
-
 };
