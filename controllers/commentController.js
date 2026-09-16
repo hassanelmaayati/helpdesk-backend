@@ -1,10 +1,30 @@
 const Comment = require('../models/Comment');
+const Ticket = require('../models/Ticket');
+
+const findAccessibleTicket = async (req, res) => {
+  const ticket = await Ticket.findById(req.params.ticketId);
+
+  if (!ticket) {
+    res.status(404).json({ err: 'Ticket not found.' });
+    return null;
+  }
+
+  if (req.user.role === 'employee' && ticket.createdBy.toString() !== req.user._id) {
+    res.status(403).json({ err: 'Access denied.' });
+    return null;
+  }
+
+  return ticket;
+};
 
 const createComment = async (req, res) => {
   try {
+    const ticket = await findAccessibleTicket(req, res);
+    if (!ticket) return;
+
     const comment = await Comment.create({
       content: req.body.content,
-      ticket: req.params.ticketId,
+      ticket: ticket._id,
       author: req.user._id,
     });
 
@@ -18,8 +38,11 @@ const createComment = async (req, res) => {
 
 const indexComments = async (req, res) => {
   try {
+    const ticket = await findAccessibleTicket(req, res);
+    if (!ticket) return;
+
     const comments = await Comment.find({
-      ticket: req.params.ticketId,
+      ticket: ticket._id,
     })
       .populate('author', 'name email')
       .sort({ createdAt: 1 });
@@ -34,6 +57,7 @@ const updateComment = async (req, res) => {
   try {
     const comment = await Comment.findOne({
       _id: req.params.commentId,
+      ticket: req.params.ticketId,
       author: req.user._id,
     });
 
@@ -59,6 +83,7 @@ const deleteComment = async (req, res) => {
   try {
     const comment = await Comment.findOne({
       _id: req.params.commentId,
+      ticket: req.params.ticketId,
       author: req.user._id,
     });
 
@@ -83,4 +108,6 @@ module.exports = {
   indexComments,
   updateComment,
   deleteComment,
+
 };
+

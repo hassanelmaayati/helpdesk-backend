@@ -26,9 +26,12 @@ const getTickets = async (req, res) => {
     if (req.user.role === "employee") {
       tickets = await Ticket.find({ createdBy: req.user._id })
         .populate("category")
-        .populate("createdBy", "name email role")
+        .populate("createdBy", "name email role");
     } else {
-tickets = await Ticket.find().populate("category").populate("createdBy", "name email role");    }
+      tickets = await Ticket.find()
+        .populate("category")
+        .populate("createdBy", "name email role");
+    }
 
     res.status(200).json(tickets);
   } catch (err) {
@@ -54,10 +57,17 @@ const getTicket = async (req, res) => {
   try {
     const ticket = await Ticket.findById(req.params.id)
       .populate("category")
-      .populate("createdBy", "name email role")
+      .populate("createdBy", "name email role");
 
     if (!ticket) {
       return res.status(404).json({ error: "Ticket not found" });
+    }
+
+    if (
+      req.user.role === "employee" &&
+      ticket.createdBy._id.toString() !== req.user._id
+    ) {
+      return res.status(403).json({ error: "Access denied" });
     }
 
     res.status(200).json(ticket);
@@ -65,6 +75,7 @@ const getTicket = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 const updateTicket = async (req, res) => {
   try {
     const ticket = await Ticket.findById(req.params.id);
@@ -77,10 +88,12 @@ const updateTicket = async (req, res) => {
       return res.status(403).json({ error: "Access denied" });
     }
 
+    const { title, description, priority, category, contactInfo } = req.body;
+
     const updatedTicket = await Ticket.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true },
+      { title, description, priority, category, contactInfo },
+      { returnDocument: "after", runValidators: true },
     );
 
     res.status(200).json(updatedTicket);
@@ -100,7 +113,7 @@ const updateStatus = async (req, res) => {
     const updatedTicket = await Ticket.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true },
+      { returnDocument: "after", runValidators: true },
     );
 
     if (!updatedTicket) {
@@ -132,6 +145,7 @@ const deleteTicket = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 module.exports = {
   createTicket,
   getTickets,
